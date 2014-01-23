@@ -1,4 +1,4 @@
-better-xcode-ibeam-cursor
+Better Xcode ibeam cursor
 =================
 
 Better i-beam (text cursor) for Xcode for dark background / light text color themes.
