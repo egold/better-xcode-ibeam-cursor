@@ -11,3 +11,11 @@ Better i-beam (text cursor) for Xcode for dark background / light text color the
 4. Restart Xcode
 
 You should now have an i-beam that is more easy to see on a dark or black background.
+
+Before:
+
+![alt text](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-before.png "Original Xcode Ibeam") 
+
+After:
+
+![alt text](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-after.png "Replacement Xcode Ibeam")
