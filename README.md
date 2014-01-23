@@ -14,8 +14,12 @@ You should now have an i-beam that is more easy to see on a dark or black backgr
 
 Before:
 
-![alt text](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-before.png "Original Xcode Ibeam") 
+![Original Xcode Ibeam](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-before.png "Original Xcode Ibeam") 
 
 After:
 
-![alt text](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-after.png "Replacement Xcode Ibeam")
+![Improved Xcode Ibeam](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-after.png "Replacement Xcode Ibeam")
+
+### Background
+
+I find it more enjoyable to code with the Midnight color theme in Xcode, but found myself always hunting for the cursor, especially on a large monitor. I found a pretty good [TIFF someone created](http://www.scigems.org/wordpress/?p=92) so I cleaned up a bit of the outline thickness and posted it here!
