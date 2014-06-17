@@ -10,6 +10,9 @@ Better i-beam (text cursor) for Xcode for dark background / light text color the
 3. Copy (`sudo cp`) the tiff to `/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff`
 4. Restart Xcode
 
+**Note**
+For newer versions of Xcode (5.1.1 for instance) the path for the cursor .tiff file is `/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Versions/A/Resources/DVTIbeamCursor.tiff`
+
 You should now have an i-beam that is more easy to see on a dark or black background.
 
 Before:
