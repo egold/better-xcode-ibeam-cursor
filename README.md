@@ -8,7 +8,7 @@ Better i-beam (text cursor) for Xcode for dark background / light text color the
 ##### The easy way
 
 ```bash
-curl -L https://raw.githubusercontent.com/jakedahn/better-xcode-ibeam-cursor/master/install.sh | bash 
+curl -L https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master/install.sh | bash 
 ```
 
 ##### The manual way

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone git@github.com:jakedahn/better-xcode-ibeam-cursor.git
+git clone https://github.com/egold/better-xcode-ibeam-cursor.git
 cd better-xcode-ibeam-cursor
 
 echo 'Backing up the original cursor that ships with xcode to ./backup-DVTIbeamCursor.tiff'
