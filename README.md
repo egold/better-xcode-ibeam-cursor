@@ -31,4 +31,4 @@ After:
 
 ### Background
 
-I find it more enjoyable to code with the Midnight color theme in Xcode, but found myself always hunting for the cursor, especially on a large monitor. I found a pretty good [TIFF someone created](http://www.scigems.org/wordpress/?p=92), so I cleaned up a bit of the outline thickness and posted it here!
+I find it more enjoyable to code with the Midnight color theme in Xcode, but found myself always hunting for the cursor, especially on a large monitor. I found a pretty good TIFF someone created, so I cleaned up a bit of the outline thickness and posted it here!
