@@ -11,6 +11,15 @@ cp $XCODE_RESOURCE_PATH/DVTIbeamCursor.tiff $XCODE_RESOURCE_PATH/backup-DVTIbeam
 echo 'Copying the improved ibeam cursor to the correct location'
 sudo cp /tmp/DVTIbeamCursor.tiff $XCODE_RESOURCE_PATH/DVTIbeamCursor.tiff
 
+if [ -a /Applications/Xcode-beta.app ]
+  then
+    echo 'Replacing image for Xcode-beta as well!'
+    XCODE_BETA_RESOURCE_PATH=/Applications/Xcode-beta.app/Contents/SharedFrameworks/DVTKit.framework/Resources
+    cp $XCODE_BETA_RESOURCE_PATH/DVTIbeamCursor.tiff $XCODE_BETA_RESOURCE_PATH/backup-DVTIbeamCursor.tiff
+    sudo cp /tmp/DVTIbeamCursor.tiff $XCODE_BETA_RESOURCE_PATH/DVTIbeamCursor.tiff
+    echo 'Done - restart Xcode Beta and have fun!'
+fi
+
 echo 'Removing downloaded image'
 rm -f /tmp/DVTIbeamCursor.tiff
 
