@@ -8,7 +8,7 @@ Better i-beam (text cursor) for Xcode for dark background / light text color the
 ##### The easy way
 
 ```bash
-curl -L https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master/install.sh | bash 
+curl -L https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master/install.sh | bash
 ```
 
 ##### The manual way
@@ -24,14 +24,14 @@ curl -L https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master
 
 1. Clone this repository
 2. Create a backup of `/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/Assets.car`
-3. Copy (`sudo cp`) the Assets.car file to `/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/Assets.car` (backup the original file first, if you wish)
+3. Copy (`sudo cp`) the Assets.car file to `/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/Assets.car`
 4. Restart Xcode
 
 You should now have an i-beam that is more easy to see on a dark or black background.
 
 Before:
 
-![Original Xcode Ibeam](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-before.png "Original Xcode Ibeam") 
+![Original Xcode Ibeam](https://raw.github.com/egold/better-xcode-ibeam-cursor/master/cursor-example-before.png "Original Xcode Ibeam")
 
 After:
 
