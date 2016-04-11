@@ -1,101 +1,160 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-APPLICATIONS_PATH=/Applications
-XCODE_APP_DIR_NAME=Xcode.app
-XCODE_BETA_APP_DIR_NAME=Xcode-beta.app
-XCODE_RESOURCE_PATH=Contents/SharedFrameworks/DVTKit.framework/Resources
+# Constants
+GITHUB_URL="https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master"
+GITHUB_PATCHES_PATH="patches"
+TMP_PATH="/tmp"
+IBEAM_TIFF_FILENAME="DVTIbeamCursor.tiff"
+ASSETS_CAR_FILENAME="Assets.car"
+BACKUP_FILENAME_PREFIX="backup-"
 
-XCODE_APP_PATH=$APPLICATIONS_PATH/$XCODE_APP_DIR_NAME/$XCODE_RESOURCE_PATH
-XCODE_BETA_APP_PATH=$APPLICATIONS_PATH/$XCODE_BETA_APP_DIR_NAME/$XCODE_RESOURCE_PATH
-
-IBEAM_TIFF_FILE=DVTIbeamCursor.tiff
-ASSETS_CAR_FILE=Assets.car
-
-XCODE_7_3_ASSETS_CAR_SHA=8e362f0cd2ee6306908b5275a721373ce8451a39
-
-GITHUB_URL=https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master
-GITHUB_PATCHES_PATH=patches
+XCODE_7_3_ASSETS_CAR_ORIGINAL_SHA="8e362f0cd2ee6306908b5275a721373ce8451a39"
+XCODE_7_3_ASSETS_CAR_PATCH_FILENAME="Assets.car-Xcode-7.3.bspatch"
+XCODE_7_3_ASSETS_CAR_PATCH_SHA="f5897929a05cf5f17ce9b31e2360afe2d6b5f7fe"
+XCODE_7_3_ASSETS_CAR_PATCHED_SHA="33c3b358988a25907f181640b8baef3ab603d7c2"
 
 function update_cursor_for_xcode() {
-    xcode_path=$1
-    show_failure_msg=$2
+    # Is Xcode found at the expected path?
+    if [ -d "${xcode_path}" ]; then
+        #   Yes. Continue.
+        echo "Updating I-beam cursor for Xcode at path ${xcode_path}"
 
-    if [ -d "${xcode_path}" ];
-    then
-        echo "Updating Xcode at path: ${xcode_path}"
+        determine_required_patch_file_for_xcode
+        if [ ! $file_to_download = "" ]; then
 
-        download_replacement_file
-        backup_original_file
-        install_replacement_file
-        cleanup
+            download_patch_file
+            if [ -e "${download_destination_path}" ]; then
 
+                backup_original_file
+                if [ -e "${xcode_path}/${backup_file}" ]; then
+
+                    apply_patch
+                fi
+            fi
+        fi
     else
-        if [ $show_failure_msg = true ]; then echo "Xcode not found at path: ${xcode_path}"; fi
+        #   No. Display a message if appropriate, then quit.
+        if [ $show_failure_msg = true ]; then echo "Xcode not found at path ${xcode_path}"; fi
     fi
 }
 
-function download_replacement_file() {
-    patch_file=false
-    if [ -e "${xcode_path}/${IBEAM_TIFF_FILE}" ]
-    then
-        resource_file_name=$IBEAM_TIFF_FILE
-    elif [ -e "${xcode_path}/${ASSETS_CAR_FILE}" ]
-    then
-        resource_sha=`shasum "${xcode_path}/${ASSETS_CAR_FILE}" | awk 'BEGIN { FS = " " } ; { print $1 }'`
-        resource_file_name="${ASSETS_CAR_FILE}-${resource_sha}.bspatch"
-        patch_file=true
+function determine_required_patch_file_for_xcode() {
+    replace_file_mode=false
+    file_to_download=""
+
+    # Determine which patch file do we need. Does the DVTIbeamCursor.tiff file exist?
+    if [ -e "${xcode_path}/${IBEAM_TIFF_FILENAME}" ]; then
+        #   Yes. We need the replacement file for it. We're going to be replacing the file rather than patching.
+        file_to_download=$IBEAM_TIFF_FILENAME;
+        replace_file_mode=true
     else
-        return -1
+        #   No. Does the Assets.car file exist?
+        if [ -e "${xcode_path}/${ASSETS_CAR_FILENAME}" ]; then
+            #     Yes. Confirm its SHA matches the original file that ships with Xcode 7.3. Does it match?
+            sha=($(shasum "${xcode_path}/${ASSETS_CAR_FILENAME}"))
+            if [ $sha = $XCODE_7_3_ASSETS_CAR_ORIGINAL_SHA ]; then
+                #       Yes. We need the patch file for it.
+                file_to_download=$XCODE_7_3_ASSETS_CAR_PATCH_FILENAME
+            else
+                #       No. The file may have already been patched. Display a message, then return.
+                if [ $sha = $XCODE_7_3_ASSETS_CAR_PATCHED_SHA ]; then
+                    echo "The patch has already been applied."
+                else
+                    echo "File checksum mismatch. Patch cannot be applied."
+                fi
+            fi
+        else
+            #     No. We have no file to patch. Is this a newer version of Xcode? Display a message, then return.
+            echo "Unable to determine which file needs to be patched. Is this a newer version of Xcode?"
+        fi
     fi
+}
 
-    if [ -e "tmp/${resource_file_name}" ]; then rm "/tmp/${resource_file_name}"; fi
-
-    if [ $patch_file = true ]
-    then
-        echo "Downloading cursor patch"
-        curl -o "/tmp/${resource_file_name}" "${GITHUB_URL}/${GITHUB_PATCHES_PATH}/${resource_file_name}"
+function download_patch_file() {
+    # Prepare to download the required patch file.
+    download_destination_path="${TMP_PATH}/${file_to_download}"
+    # Delete any existing downloaded file using our download target name.
+    if [ -e "${download_destination_path}" ]; then rm "${download_destination_path}"; fi
+    # Download the patch file.
+    noun="patch"
+    if [ $replace_file_mode = true ]; then noun="replacement"; fi
+    echo "Downloading cursor ${noun} file to ${download_destination_path}"
+    curl -o "${download_destination_path}" "${GITHUB_URL}/${GITHUB_PATCHES_PATH}/${file_to_download}"
+    # Does the downloaded file's SHA match what we were expecting?
+    sha=($(shasum "${download_destination_path}"))
+    if [ $sha = $XCODE_7_3_ASSETS_CAR_PATCH_SHA ]; then
+        #   Yes. Continue.
+        echo "Downloaded successfully."
     else
-        echo "Downloading new cursor file"
-        curl -o "/tmp/${resource_file_name}" "${GITHUB_URL}/${resource_file_name}"
-    fi
-
-    if [ ! -s "/tmp/${resource_file_name}" ]
-    then
-        rm "/tmp/${resource_file_name}"
-        echo "Failed to download!"
-        exit 1
+        #   No. The download has failed. Display a message, then quit.
+        cleanup
+        echo "Download failed."
     fi
 }
 
 function backup_original_file() {
-    backup_resource_file_name="backup-${resource_file_name}"
-
-    if [ -e "${xcode_path}/${backup_resource_file_name}" ]
-    then
-        echo "Backup file already exists: ${backup_resource_file_name}"
+    # Prepare to create a backup of Xcode's original file.
+    if [ -e "${xcode_path}/${IBEAM_TIFF_FILENAME}" ]; then
+        original_file="${IBEAM_TIFF_FILENAME}"
     else
-        echo "Backing up the original cursor file that ships with Xcode to: ${backup_resource_file_name}"
-        sudo cp "${xcode_path}/${resource_file_name}" "${xcode_path}/${backup_resource_file_name}"
+        #   No. Does the Assets.car file exist?
+        if [ -e "${xcode_path}/${ASSETS_CAR_FILENAME}" ]; then
+            original_file="${ASSETS_CAR_FILENAME}"
+        fi
+    fi
+    backup_file="${BACKUP_FILENAME_PREFIX}${original_file}"
+    # Does a backup file already exist?
+    if [ -e "${xcode_path}/${backup_file}" ]; then
+        #   Yes. Continue.
+        echo "Backup file already exists."
+    else
+        #   No. Display a message. Create the backup.
+        echo "Creating backup of ${original_file} -> ${backup_file}"
+        sudo cp "${xcode_path}/${original_file}" "${xcode_path}/${backup_file}"
+        if [ ! -e "${xcode_path}/${backup_file}" ]; then
+            echo "Failed to create backup. Cannot continue."
+            cleanup
+        fi
     fi
 }
 
-function install_replacement_file() {
-    if [ $patch_file = true ]
-    then
-        echo "Patching in the improved ibeam cursor"
-        sudo bspatch "${xcode_path}/${ASSETS_CAR_FILE}" "${xcode_path}/${ASSETS_CAR_FILE}" "/tmp/${resource_file_name}"
+function apply_patch() {
+    # We are now ready to patch or replace Xcode's file. Apply the patch/replacement.
+    if [ $replace_file_mode = true ]; then
+        sudo rm "${xcode_path}/${original_file}"
+        sudo mv "${download_destination_path}" "${xcode_path}/${original_file}"
     else
-        echo "Copying the improved ibeam cursor to the correct location"
-        sudo cp "/tmp/${resource_file_name}" "${xcode_path}/${resource_file_name}"
+        sudo bspatch "${xcode_path}/${original_file}" "${xcode_path}/${original_file}" "${download_destination_path}"
+        # Does the patched file's SHA match what we were expecting?
+        sha=($(shasum "${xcode_path}/${original_file}"))
+        if [ $sha = $XCODE_7_3_ASSETS_CAR_PATCHED_SHA ]; then
+            #   Yes. Patch was successful. Display message, then continue.
+            echo "Xcode has been patched successfully. Please restart Xcode and have fun!"
+        else
+            #   No. Patch failed. Delete patched file. Restore backup. Display message, then quit.
+            echo "Failed to apply patch. :( Restoring backup."
+            sudo rm "${xcode_path}/${original_file}"
+            sudo cp "${xcode_path}/${backup_file}" "${xcode_path}/${original_file}"
+        fi
     fi
+    # Delete the downloaded patch file.
+    cleanup
 }
 
 function cleanup() {
-    echo "Cleaning up"
-    rm "/tmp/${resource_file_name}"
+    if [ -e "${download_destination_path}" ]; then rm "${download_destination_path}"; fi
 }
 
-update_cursor_for_xcode $XCODE_APP_PATH true
-update_cursor_for_xcode $XCODE_BETA_APP_PATH false
+# --- Main ---
 
-echo "Done - restart Xcode and have fun!"
+# Install for standard Xcode installation.
+show_failure_msg=true
+xcode_path="/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources"
+update_cursor_for_xcode
+
+# Install for beta Xcode installation, if found.
+show_failure_msg=false
+xcode_path="/Applications/Xcode-beta.app/Contents/SharedFrameworks/DVTKit.framework/Resources"
+update_cursor_for_xcode
+
+# Done!
