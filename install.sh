@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Constants
-GITHUB_URL="https://raw.githubusercontent.com/ebaker355/better-xcode-ibeam-cursor/master"
+GITHUB_URL="https://raw.githubusercontent.com/egold/better-xcode-ibeam-cursor/master"
 GITHUB_PATCHES_PATH="patches"
 TMP_PATH="/tmp"
 IBEAM_TIFF_FILENAME="DVTIbeamCursor.tiff"
@@ -66,6 +66,8 @@ function determine_required_patch_file_for_xcode() {
         else
             #       No. The file may have already been patched. Display a message, then return.
             if [ $sha = $XCODE_7_3_ASSETS_CAR_PATCHED_SHA ]; then
+                echo "The patch has already been applied."
+            elif [ $sha = $XCODE_7_3_1_ASSETS_CAR_PATCHED_SHA ]; then
                 echo "The patch has already been applied."
             else
                 echo "File checksum mismatch."
