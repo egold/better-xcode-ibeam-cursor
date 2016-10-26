@@ -3,6 +3,10 @@ Better Xcode ibeam cursor
 
 Better i-beam (text cursor) for Xcode for dark background / light text color themes.
 
+## Important note for Xcode 8 users!
+
+In Xcode 8, Apple took away plugins, and obfuscated a lot of things from us. For instance, it's no longer possible to replace the i-beam cursor with a simple file swap (Xcode 6 and lower) or even Assets.car hacking (Xcode 7). Feel free to investigate and try to find a workaround, and submit a pull request. If you want to follow this repository via starring / watching, perhaps subsequent versions of Xcode will make life easier on those of us who want to customize the software we spend so many hours in every day! If this happens, I'm happy to update the repository to support new ways of updating the i-beam. Until then, good luck & enjoy hunting for that cursor!
+
 ## Important note for Xcode 7.3+ users!
 
 The file that controls the i-beam cursor is no longer a flat .tiff file, but rather part of an assets bundle called Assets.car. Please see [issue #16's thread](https://github.com/egold/better-xcode-ibeam-cursor/issues/16) for a manual workaround. Thanks go out to @cjheng, @allen-zeng, @sokobania, and @ebaker355 for helping find and solve the issue. I'm looking forward to getting this working in an automated way in the future.
